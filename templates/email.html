@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Phishing Detection</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Email Phishing Detection</h1>
+    <p>AI-Based Email Fraud Analysis</p>
+
+    <div class="form-box">
+
+        <textarea id="emailText" rows="6" placeholder="Paste email content here..."></textarea>
+
+        <br><br>
+
+        <button onclick="checkEmail()">Check Email</button>
+
+        <h3 id="result"></h3>
+
+    </div>
+
+    <script>
+        async function checkEmail() {
+
+            let text = document.getElementById("emailText").value;
+
+            if (!text.trim()) {
+                document.getElementById("result").innerText = "Please enter email content.";
+                return;
+            }
+
+            const response = await fetch("/predict_email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            const data = await response.json();
+
+            document.getElementById("result").innerText = data.result;
+        }
+    </script>
+
+</body>
+</html>

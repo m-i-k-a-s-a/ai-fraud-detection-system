@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Based Credit Card Fraud Detection</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        p {
+            color: #555;
+        }
+
+        input, select {
+            padding: 8px;
+            width: 250px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            text-align: left;
+            width: 320px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AI-Based Credit Card Fraud Detection System</h1>
+    <p>Machine Learning + FastAPI</p>
+
+    <div class="form-box">
+
+        <div class="form-group">
+            <input type="number" id="amount" placeholder="Transaction Amount" />
+        </div>
+
+        <div class="form-group">
+            <select id="type">
+                <option value="0">POS (Card Swipe)</option>
+                <option value="1">Online Payment</option>
+                <option value="2">ATM Withdrawal</option>
+            </select>
+        </div>
+
+        <div class="checkbox-group">
+
+            <label class="checkbox-item">
+                <input type="checkbox" id="international">
+                <span>International Transaction</span>
+            </label>
+
+            <label class="checkbox-item">
+                <input type="checkbox" id="night">
+                <span>Late Night Transaction</span>
+            </label>
+
+            <label class="checkbox-item">
+                <input type="checkbox" id="multiple">
+                <span>Multiple Transactions (Short Time)</span>
+            </label>
+
+            <label class="checkbox-item">
+                <input type="checkbox" id="newdevice">
+                <span>New Device Used</span>
+            </label>
+
+        </div>
+
+        <button onclick="sendData()">Check Transaction</button>
+
+        <h3 id="result"></h3>
+
+    </div>
+
+    <script>
+        async function sendData() {
+
+            let amount = parseFloat(document.getElementById("amount").value);
+            let type = parseInt(document.getElementById("type").value);
+            let international = document.getElementById("international").checked;
+            let night = document.getElementById("night").checked;
+            let multiple = document.getElementById("multiple").checked;
+            let newdevice = document.getElementById("newdevice").checked;
+
+            let features = new Array(30).fill(0);
+
+            features[29] = amount;
+            features[1] = type * 1.5;
+
+            if (international) {
+                features[2] = -3.0;
+                features[3] = 2.5;
+            }
+
+            if (night) {
+                features[4] = -2.0;
+            }
+
+            if (multiple) {
+                features[5] = 3.0;
+            }
+
+            if (newdevice) {
+                features[6] = -2.5;
+            }
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ features: features })
+            });
+
+            const data = await response.json();
+
+            document.getElementById("result").innerText =
+                "Result: " + data.result + " | Risk Score: " + data.risk_score;
+        }
+    </script>
+
+</body>
+</html>

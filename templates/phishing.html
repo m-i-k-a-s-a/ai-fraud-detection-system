@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Website Phishing Detection</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            padding-top: 80px;
+            margin: 0;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            margin: auto;
+            padding: 30px;
+            width: 450px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #explanation {
+            margin-top: 15px;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>🌐 Website Phishing Detection</h2>
+
+    <div class="card">
+
+        <input type="text" id="urlInput" placeholder="Enter website URL (e.g., https://example.com)">
+
+        <br>
+
+        <button onclick="checkURL()">Scan Website</button>
+
+        <h3 id="result"></h3>
+
+        <div id="explanation"></div>
+
+    </div>
+
+<script>
+async function checkURL() {
+
+    let url = document.getElementById("urlInput").value;
+
+    if (!url) {
+        document.getElementById("result").innerText = "Please enter a URL.";
+        return;
+    }
+
+    const response = await fetch("/predict_phishing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+        document.getElementById("result").innerText = "Error: " + data.error;
+        document.getElementById("result").style.color = "black";
+        return;
+    }
+
+   if (data.risk_score !== undefined) {
+
+    let resultElement = document.getElementById("result");
+
+    resultElement.innerText = "Risk Score: " + data.risk_score + "%";
+
+    if (data.risk_score >= 70) {
+        resultElement.style.color = "red";
+    } else if (data.risk_score >= 40) {
+        resultElement.style.color = "orange";
+    } else {
+        resultElement.style.color = "green";
+    }
+}
+
+
+    if (data.explanation && data.explanation.length > 0) {
+        document.getElementById("explanation").innerHTML =
+            "<strong>Why?</strong><ul>" +
+            data.explanation.map(e => "<li>" + e + "</li>").join("") +
+            "</ul>";
+    } else {
+        document.getElementById("explanation").innerHTML = "";
+    }
+}
+</script>
+
+</body>
+</html>
