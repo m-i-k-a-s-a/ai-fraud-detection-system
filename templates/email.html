@@ -3,41 +3,76 @@
 <head>
     <title>Email Phishing Detection</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: black;
+            color: #00ffcc;
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
+        }
+
+        /* Background glow */
+        body::before {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #001a1a 0%, #000000 80%);
+            z-index: -1;
         }
 
         h1 {
-            color: #2c3e50;
+            font-size: 32px;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        p {
+            color: #00aaff;
+        }
+
+        .form-box {
+            background: #0d0d0d;
+            padding: 35px;
+            display: inline-block;
+            border-radius: 12px;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 15px #00ffcc33;
+            max-width: 600px;
+            width: 100%;
         }
 
         textarea {
             width: 100%;
-            max-width: 500px;
-            padding: 10px;
+            padding: 12px;
             font-size: 14px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            border-radius: 8px;
+            border: 1px solid #00ffcc;
+            background: black;
+            color: #00ffcc;
             resize: none;
         }
 
         button {
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            font-size: 16px;
+            padding: 12px 25px;
+            background: transparent;
+            color: #00ffcc;
+            border: 1px solid #00ffcc;
+            font-size: 15px;
             cursor: pointer;
-            border-radius: 5px;
-            margin-top: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            transition: 0.3s;
         }
 
         button:hover {
-            background-color: #2980b9;
+            background: #00ffcc;
+            color: black;
+            box-shadow: 0 0 20px #00ffcc;
+            transform: scale(1.05);
         }
 
         #result {
@@ -46,32 +81,44 @@
             font-weight: bold;
         }
 
-        .form-box {
-            background: white;
-            padding: 30px;
-            display: inline-block;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 100%;
+        .safe {
+            color: #00ffcc;
+        }
+
+        .fraud {
+            color: #ff004c;
+            text-shadow: 0 0 10px #ff004c;
+        }
+
+        .back {
+            display: block;
+            margin-top: 25px;
+            color: #00aaff;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>Email Phishing Detection</h1>
-    <p>AI-Based Email Fraud Analysis</p>
+    <h1>📧 EMAIL PHISHING DETECTION</h1>
+    <p>AI-Based Cyber Threat Email Analysis</p>
 
     <div class="form-box">
 
         <textarea id="emailText" rows="6" placeholder="Paste email content here..."></textarea>
 
-        <br><br>
+        <br>
 
-        <button onclick="checkEmail()">Check Email</button>
+        <button onclick="checkEmail()">SCAN EMAIL</button>
 
         <h3 id="result"></h3>
+
+        <a href="/" class="back">⬅ Back to Home</a>
 
     </div>
 
@@ -95,7 +142,15 @@
 
             const data = await response.json();
 
-            document.getElementById("result").innerText = data.result;
+            let resultElement = document.getElementById("result");
+
+            if (data.result.toLowerCase().includes("phishing")) {
+                resultElement.innerHTML = "⚠️ PHISHING EMAIL DETECTED";
+                resultElement.className = "fraud";
+            } else {
+                resultElement.innerHTML = "✅ SAFE EMAIL";
+                resultElement.className = "safe";
+            }
         }
     </script>
 
